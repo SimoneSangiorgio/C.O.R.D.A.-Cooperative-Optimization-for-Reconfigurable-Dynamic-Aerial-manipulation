@@ -1,3 +1,5 @@
+### ATTITUDE SETTLING FOR NAVIGATION ###
+
 import numpy as np
 
 def run_attitude_settling(t, ctx, p, state, ref):
@@ -41,7 +43,7 @@ def run_attitude_settling(t, ctx, p, state, ref):
         # MODO CLASSICO: Rampa Assetto, Aero Blend fisso a 0
         ctx.current_aero_blend = 0.0
         
-        # >>> NUOVA LOGICA: Trasforma angoli dal frame "Traj" al frame corrente <<<
+        
         from mission import rotate_attitude_to_yaw
         
         # 1. DEFINIAMO IL RIFERIMENTO ASSOLUTO
@@ -49,7 +51,7 @@ def run_attitude_settling(t, ctx, p, state, ref):
         # e NON rispetto al naso del drone.
         target_roll_ref = p.traj_target_roll
         target_pitch_ref = p.traj_target_pitch
-        yaw_ref_frame = p.traj_target_yaw  # <--- MODIFICA QUI (Era p.final_target_yaw)
+        yaw_ref_frame = p.traj_target_yaw  
         
         # 2. PRENDIAMO LO YAW ATTUALE DELLA FORMAZIONE
         # Questo è dove i droni stanno effettivamente guardando (dovuto a vento o tracking)
@@ -73,10 +75,7 @@ def run_attitude_settling(t, ctx, p, state, ref):
         if config_blend > 0.5:
             ctx.current_aero_blend = 1.0
             ctx.transition_att = (0.0, 0.0)
-            
-            # --- AGGIUNGI QUESTA RIGA QUI SOTTO ---
             ctx.ref_snap_yaw = ctx.last_valid_yaw  
-            # --------------------------------------
 
         else:
             ctx.current_aero_blend = 0.0

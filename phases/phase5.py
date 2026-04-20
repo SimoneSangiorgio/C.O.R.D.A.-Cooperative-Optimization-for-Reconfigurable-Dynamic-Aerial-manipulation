@@ -1,3 +1,5 @@
+### FINAL RESTING ATTITUDE ###
+
 import numpy as np
 
 # ==============================================================================
@@ -66,7 +68,7 @@ def run_winch(t, ctx, p, state, ref):
     curr_yaw_target = norm_angle(curr_yaw_target)
     ref['yaw'] = curr_yaw_target
     
-    # --- NOVITÀ: FEEDFORWARD VELOCITÀ E ACCELERAZIONE YAW ---
+    # --- FEEDFORWARD VELOCITÀ E ACCELERAZIONE YAW ---
     # Questo dice al PID di "accompagnare" il movimento invece di frenarlo
     ref['yaw_vel'] = s_dot * ctx.total_yaw_diff
     ref['yaw_acc'] = s_ddot * ctx.total_yaw_diff

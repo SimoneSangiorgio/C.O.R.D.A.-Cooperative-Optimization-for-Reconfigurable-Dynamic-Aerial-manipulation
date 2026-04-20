@@ -4,8 +4,8 @@ import numpy as np
 import formation as formation
 
 def run(t, ctx, p, state, ref):
-    # Riferimento Payload fermo a terra
-    # NOTA: Usiamo p.pay_h/2 per assicurarci che il riferimento sia al centro geometrico
+    # Payload fermo a terra
+    # Usiamo p.pay_h/2 per assicurarci che il riferimento sia al centro geometrico
     ref['pos'] = np.array([p.home_pos[0], p.home_pos[1], p.home_pos[2] + p.pay_h/2]) 
     ref['vel'] = np.zeros(3)
     ref['acc'] = np.zeros(3)
@@ -17,9 +17,7 @@ def run(t, ctx, p, state, ref):
     # Parametri temporali
     T_IDLE = getattr(p, 't_idle', 1.0)
     T_PRETENSION = getattr(p, 't_pretension', 5.0)
-    T_SETTLE = 1.0 # Tempo extra per stabilizzare la tensione asimmetrica
-    
-    total_phase_duration = T_IDLE + T_PRETENSION + T_SETTLE
+    T_SETTLE = 1.0 # Tempo extra per stabilizzare la tensione
     
     # --- SETUP INIZIALE ---
     # Calcoliamo gli offset iniziali reali basati sulla posizione corrente dei droni a terra
@@ -31,7 +29,7 @@ def run(t, ctx, p, state, ref):
 
     start_targets = ctx.pretension_start_offsets
     
-    # Default fallback values
+    
     end_targets = p.uav_offsets
     end_L = np.ones(p.N) * p.L
 
@@ -51,7 +49,7 @@ def run(t, ctx, p, state, ref):
             blend = 1.0 # Mantiene la posizione finale durante il T_SETTLE
 
         # =========================================================================
-        # TRUCCO "VIRTUAL FLIGHT STATE" (Robust CoM Handling)
+        # "VIRTUAL FLIGHT STATE" (Robust CoM Handling)
         # =========================================================================
         # Creiamo uno stato fittizio per l'ottimizzatore come se il carico stesse volando.
         # Questo permette di calcolare la geometria esatta per compensare il CoM.
@@ -66,7 +64,7 @@ def run(t, ctx, p, state, ref):
         # 2. Azzera velocità e rotazioni (Hovering statico ideale)
         flight_state['pay_vel'] = np.zeros(3)
         flight_state['pay_omega'] = np.zeros(3)
-        # IMPORTANTE: Forziamo l'assetto piatto nello stato virtuale
+        # Forziamo l'assetto piatto nello stato virtuale
         flight_state['pay_att'] = np.zeros(3) 
         
         # 3. Gestione Dinamica del CoM (Sloshing & Offset)

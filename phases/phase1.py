@@ -16,7 +16,7 @@ def run_liftoff(t, ctx, p, state, ref):
     LIFT_HEIGHT = 1 + max(p.pay_l, p.pay_h, p.pay_w, p.R_disk)
     T_LIFT = p.t_lift
     
-    # 0. Wait time iniziale per far assestare i feedforward (opzionale)
+    # 0. Wait time iniziale per far assestare i feedforward
     WAIT_FOR_FF = 0.5 
     
     elapsed = t - ctx.start_phase_time
@@ -36,7 +36,7 @@ def run_liftoff(t, ctx, p, state, ref):
     
     # 2. Calcolo Traiettoria
     if elapsed < WAIT_FOR_FF:
-        # HOLD iniziale dolce (mantiene lo stato fine fase 0)
+        # HOLD iniziale (mantiene lo stato fine fase 0)
         z_curr = start_pos_z
         z_vel = 0
         z_acc = 0
@@ -49,9 +49,6 @@ def run_liftoff(t, ctx, p, state, ref):
     ref['pos'][1] = base_y
     ref['pos'][2] = z_curr
     
-    # Iniettiamo una piccola componente di smorzamento attivo nel riferimento se necessario
-    # Ma il PID se ne occupa già con k_active_damp.
-    
     ref['vel'] = np.array([0, 0, z_vel])
     ref['acc'] = np.array([0, 0, z_acc])
     
@@ -60,7 +57,7 @@ def run_liftoff(t, ctx, p, state, ref):
     if not hasattr(ctx, 'phase1_yaw_start') or ctx.phase1_yaw_start is None:
         ctx.phase1_yaw_start = ctx.last_valid_yaw
 
-    # Calcola target yaw (gerarchia esistente)
+    # Calcola target yaw 
     if lambda_traj > 0.5:
         target_yaw = getattr(ctx, 'last_stable_yaw', ctx.ref_snap_yaw)
     elif getattr(p, 'yaw_tracking_enabled', False):

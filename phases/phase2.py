@@ -1,3 +1,5 @@
+### ALIGNMENT ###
+
 import numpy as np
 
 def run_alignment(t, ctx, p, state, ref):
@@ -24,7 +26,6 @@ def run_alignment(t, ctx, p, state, ref):
             if dist_xy > 1.0:
                 psi_traj = np.arctan2(diff[1], diff[0])
                 
-                # Trova orientamento con minima rotazione per simmetria droni
                 min_yaw = np.inf
                 for k in range(p.N):
                     candidate = psi_traj - k*(2*np.pi/p.N)
@@ -37,10 +38,9 @@ def run_alignment(t, ctx, p, state, ref):
             else:
                 target_yaw = ctx.ref_snap_yaw
         else:
-            # MODO FIXED: Usa il parametro statico traj_target_yaw
             target_yaw = getattr(p, 'traj_target_yaw', 0.0)
 
-    # 3. Applicazione Riferimento (Rimosso ritardo in Modo Physics)
+    # 3. Applicazione Riferimento 
     if lambda_traj_eff > 0.5:
         # Nessuna interpolazione: seguiamo istantaneamente l'ottimizzatore per evitare il lag di 10°
         ref['yaw'] = target_yaw

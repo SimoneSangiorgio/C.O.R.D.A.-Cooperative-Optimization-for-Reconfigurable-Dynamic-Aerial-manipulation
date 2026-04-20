@@ -1,3 +1,5 @@
+### NAVIGATION ###
+
 import numpy as np
 
 def get_bezier_point(s, p0, p1, p2, p3):
@@ -56,12 +58,11 @@ def run(t, ctx, p, state, ref):
     ref['pos'] = 0.25*p1 + 0.50*p2 + 0.25*p3
     ref['vel'] = 0.25*v1 + 0.50*v2 + 0.25*v3
     
-    # CORREZIONE 1: Rampa di accelerazione per evitare scatti nel vettore forza richiesto
+    # Rampa di accelerazione per evitare scatti nel vettore forza richiesto
     acc_ramp = np.clip(elapsed / 2.0, 0.0, 1.0)
     ref['acc'] = (0.25*a1 + 0.50*a2 + 0.25*a3) * acc_ramp
 
     # 3. GESTIONE YAW (Gerarchia e Stabilità)
-    # CORREZIONE 2: Uso obbligatorio di lambda_traj_effective per evitare conflitti
     lambda_traj_eff = getattr(ctx, 'lambda_traj_effective', 0.0)
 
     if lambda_traj_eff > 0.5:
@@ -70,7 +71,6 @@ def run(t, ctx, p, state, ref):
     elif getattr(p, 'yaw_tracking_enabled', False):
         # MODO TRAJECTORY: Segue la tangente della curva Bezier
         v_act = ref['vel']
-        # CORREZIONE 3: Soglia alzata a 0.2 per evitare instabilità a fine traiettoria
         if np.hypot(v_act[0], v_act[1]) > 0.2:
             target_yaw = np.arctan2(v_act[1], v_act[0])
         else:
@@ -86,11 +86,11 @@ def run(t, ctx, p, state, ref):
 
     # 4. GESTIONE ASSETTO (Blending e Disaccoppiamento)
     if getattr(ctx, 'lambda_aero_effective', 0.0) > 0.5:
-        # Aero domina: l'assetto geometrico va a zero
+        # MODO Aero: l'assetto geometrico va a zero
         ctx.current_aero_blend = 1.0
         ctx.transition_att = (0.0, 0.0)
     else:
-        # Modo Classico: ruotiamo i riferimenti (Roll/Pitch) in base allo Yaw attuale
+        # MODO Classico: ruotiamo i riferimenti (Roll/Pitch) in base allo Yaw attuale
         from mission import rotate_attitude_to_yaw
         r_curr, p_curr = rotate_attitude_to_yaw(p.traj_target_roll, p.traj_target_pitch, 
                                                p.traj_target_yaw, ref['yaw'])
