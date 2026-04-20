@@ -3,13 +3,13 @@ from scipy.integrate import solve_ivp
 import time
 
 # Formation
-import formation as formation
+import formation 
 
 # Physics & Control
 from mission import MissionContext, equations_of_motion, update_guidance
 from parameters import SysParams
 # Analysis
-import analysis.system_simulation as system_simulation
+import system_simulation
 
 # --- CONFIGURAZIONE VISUALIZZAZIONE ---
 # Inserisci qui le fasi che vuoi vedere nell'animazione.
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     
     y_res = np.zeros((len(x0), steps))
     t_res = np.zeros(steps)
-    phase_res = np.zeros(steps, dtype=int)  # <--- NUOVO: Array per loggare le fasi
+    phase_res = np.zeros(steps, dtype=int)
     thrust_res = np.zeros((p.N, steps))
     current_x = x0.copy()
     current_t = 0.0
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     
 
     for k in range(steps):
-        # 0. Salvataggio dati per plot (Invariato)
+        # 0. Salvataggio dati per plot
         y_res[:, k] = current_x
         t_res[k] = current_t
         phase_res[k] = ctx.phase
@@ -72,12 +72,8 @@ if __name__ == "__main__":
             update_guidance(current_t, current_x, p, ctx)
             last_guidance_time = current_t
         
-        # =================================================================
-        # MODIFICA QUI SOTTO: SOSTITUISCI IL VECCHIO RK4 CON QUESTO BLOCCO
-        # =================================================================
-        
         # === 2. PHYSICS SUB-STEPPING (High Freq Physics, Low Cost) ===
-        # Spezziamo il dt grafico (0.01s) in 5 passettini fisici (0.002s)
+        # Spezziamo il dt grafico (0.01s) in 5 passi fisici (0.002s)
         # Questo rende i contatti col suolo stabili senza rallentare il PC.
         if ctx.phase <= 1:
             physics_substeps = 10
@@ -104,7 +100,7 @@ if __name__ == "__main__":
                 thrust_res[i, k] = np.linalg.norm(thrust_vec)
 
         
-        # Logging cambio fase (Invariato)
+        # Logging cambio fase
         if ctx.phase != last_phase:
              pass
         last_phase = ctx.phase

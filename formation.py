@@ -1,6 +1,5 @@
 """
-Formation Control Algorithm - Enhanced Implementation
-Based on the complete mathematical formulation with all improvements.
+CORDA
 
 This module implements the full optimization loop with:
 - CoM offset corrections (Parallel Axis Theorem)

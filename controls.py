@@ -16,7 +16,7 @@ def compute_controls(s, ref, p, ctx, t):
     alpha_motor = getattr(p, 'alpha_motor_lag', 0.15) 
     t_idle_end = getattr(p, 't_idle', 1.0)
     
-    # Vettore gravità per calcoli
+    # Vettore gravità 
     g_vec = np.array([0, 0, p.g])
 
     for i in range(p.N):
@@ -101,13 +101,6 @@ def compute_controls(s, ref, p, ctx, t):
                 prog = dt_ramp / ramp_duration
                 # Curva sigmoidale smooth (3x^2 - 2x^3)
                 scale_factor = 3*prog**2 - 2*prog**3
-                
-                # Formula Magica:
-                # Vogliamo scalare la SPINTA (Thrust), non l'accelerazione matematica.
-                # Thrust_desiderata = m * (cmd + g)
-                # Thrust_scalata = Thrust_desiderata * scale_factor
-                # m * (cmd_finale + g) = m * (cmd + g) * scale_factor
-                # cmd_finale = (cmd + g) * scale_factor - g
                 
                 cmd = (cmd + g_vec) * scale_factor - g_vec
     

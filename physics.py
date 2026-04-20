@@ -177,7 +177,6 @@ def compute_derivatives(t, s, u_acc, p, ctx, debug_forces):
 
     # CoM del sistema rispetto al GC nel body frame:
     # e_CoM = e_static + (m_liquid / m_tot) * e_slosh
-    # FIX: dividere per m_tot, non per m_payload
     e_com_body = e_static + (p.m_liquid / m_tot) * e_slosh
 
     # =========================================================================
@@ -185,7 +184,7 @@ def compute_derivatives(t, s, u_acc, p, ctx, debug_forces):
     # =========================================================================
     wind_vec_world = p.wind_vel
 
-    # FIX: forza aerodinamica calcolata con velocità relativa unificata
+    # Forza aerodinamica calcolata con velocità relativa unificata
     # v_rel = v_payload - v_wind (include cross-term quadratico correttamente)
     f_aero_pay = compute_payload_aero(s['pay_vel'], wind_vec_world, R_pay, p)
 
@@ -315,7 +314,6 @@ def compute_derivatives(t, s, u_acc, p, ctx, debug_forces):
     tau_slosh = np.cross(r_slosh_world, F_slosh_world)
 
     # Somma forze esterne sul sistema (payload + liquido)
-    # FIX: la massa totale è m_tot = m_payload + m_liquid
     # F_slosh è una forza interna al sistema: non va sommata a f_sum per calcolare acc_pay,
     # ma è già inclusa implicitamente. La forza netta esterna sul sistema è:
     f_ext_sum = (f_cables_sum
@@ -324,7 +322,6 @@ def compute_derivatives(t, s, u_acc, p, ctx, debug_forces):
                  #+ F_slosh_world
                  )
 
-    # FIX: secondo principio al sistema completo (contenitore + liquido)
     acc_pay = f_ext_sum / m_tot - g_vec
 
     # =========================================================================
@@ -382,7 +379,7 @@ def compute_derivatives(t, s, u_acc, p, ctx, debug_forces):
             f_floor_reaction   += f_normal_vec
             tau_floor_reaction += np.cross(r_pt_world, f_normal_vec)
 
-    # FIX: anche la reazione del suolo va divisa per m_tot
+    # Anche la reazione del suolo va divisa per m_tot
     acc_pay += f_floor_reaction / m_tot
 
     if contact_points >= 3:

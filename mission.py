@@ -1,5 +1,5 @@
 import numpy as np
-import formation as formation
+import formation
 import physics
 import controls
 import phases.phase0 as phase0
